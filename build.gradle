@@ -1,0 +1,27 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'java'
+}
+
+group = 'fr.mines-stetienne.ci'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.projectlombok:lombok:1.18.24'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'org.apache.jena:jena-shacl:4.4.0'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

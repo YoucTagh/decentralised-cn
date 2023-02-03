@@ -1,13 +1,16 @@
 package fr.minesstetienne.ci.dcn.dto;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 /**
  * @author YoucTagh
  */
 public class RepresentationDetail {
     private String iri;
-    private String status;
+    private HttpStatus status;
 
-    private String contentType;
+    private MediaType contentType;
     private String content;
 
     private Long tripleNumber;
@@ -23,11 +26,11 @@ public class RepresentationDetail {
         return this;
     }
 
-    public String getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 
-    public RepresentationDetail setStatus(String status) {
+    public RepresentationDetail setStatus(HttpStatus status) {
         this.status = status;
         return this;
     }
@@ -41,11 +44,11 @@ public class RepresentationDetail {
         return this;
     }
 
-    public String getContentType() {
+    public MediaType getContentType() {
         return contentType;
     }
 
-    public RepresentationDetail setContentType(String contentType) {
+    public RepresentationDetail setContentType(MediaType contentType) {
         this.contentType = contentType;
         return this;
     }

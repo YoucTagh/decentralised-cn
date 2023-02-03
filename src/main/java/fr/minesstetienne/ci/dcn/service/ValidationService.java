@@ -8,6 +8,7 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.shacl.ShaclValidator;
 import org.apache.jena.shacl.Shapes;
 import org.apache.jena.shacl.ValidationReport;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -23,35 +24,47 @@ public class ValidationService {
     public ValidationService() {
     }
 
-    public boolean checkConformance(String representationIRI, String profileIRI) {
+    public RepresentationDetail checkConformance(String representationIRI, String profileIRI) {
         Graph shapesGraph = RDFDataMgr.loadGraph(profileIRI);
         Shapes shapes = Shapes.parse(shapesGraph);
 
         Graph dataGraph = RDFDataMgr.loadGraph(representationIRI);
 
         if (dataGraph.isEmpty()) {
-            return false;
+            return new RepresentationDetail()
+                    .setIri(representationIRI)
+                    .setStatus(HttpStatus.NOT_ACCEPTABLE)
+                    .setContentType(MediaType.parseMediaType("text/turtle"))
+                    .setTripleNumber(0L)
+                    .setValid(false);
         }
 
         ValidationReport report = ShaclValidator.get().validate(shapes, dataGraph);
 
         int numberViolations = report.getEntries().size();
-        return (numberViolations == 0);
+
+        StringWriter contentSW = new StringWriter();
+        RDFDataMgr.write(contentSW, dataGraph, Lang.TURTLE);
+
+        return new RepresentationDetail()
+                .setValid(numberViolations == 0)
+                .setIri(representationIRI)
+                .setStatus((numberViolations == 0) ? HttpStatus.OK : HttpStatus.NOT_ACCEPTABLE)
+                .setContent(contentSW.toString())
+                .setContentType(MediaType.parseMediaType("text/turtle"))
+                .setTripleNumber((long) dataGraph.size());
     }
 
     public ResourceDetail checkConformance(ResourceDetail resourceDetail, String shapeIRI) {
 
-        List<MediaType> mediaTypes = Arrays.asList(
-                MediaType.parseMediaType("application/rdf+xml"),
-                MediaType.parseMediaType("text/turtle"),
-                MediaType.parseMediaType("application/n-triples"));
+        List<MediaType> mediaTypes = UtilService.getSemanticAcceptedMediaTypes();
         boolean stopValidation;
         for (RepresentationDetail representationDetail : resourceDetail.getRepresentationDetails()) {
-            if (representationDetail.getStatus().equals("200")) {
+            if (representationDetail.getStatus().equals(HttpStatus.OK)) {
                 stopValidation = false;
                 for (int i = 0; i < mediaTypes.size() && !stopValidation; i++) {
                     MediaType mediaType = mediaTypes.get(i);
-                    if (MediaType.parseMediaType(representationDetail.getContentType()).equalsTypeAndSubtype(mediaType)) {
+                    if (representationDetail.getContentType().equalsTypeAndSubtype(mediaType)) {
                         try {
 
                             System.out.println("Validating Graph: " + representationDetail.getIri());
@@ -79,7 +92,7 @@ public class ValidationService {
                         } catch (Exception ex) {
                             representationDetail.setValid(false);
                             representationDetail.setTripleNumber(0L);
-                            representationDetail.setStatus("Unknown Error");
+                            representationDetail.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
                         }
                     }
                 }
@@ -87,9 +100,9 @@ public class ValidationService {
         }
 
         resourceDetail.getRepresentationDetails().sort((r1, r2) -> {
-            if (!Objects.equals(r1.getStatus(), "200") || r1.getTripleNumber() == null)
+            if (!Objects.equals(r1.getStatus(), HttpStatus.OK) || r1.getTripleNumber() == null)
                 r1.setTripleNumber(-1L);
-            if (!Objects.equals(r2.getStatus(), "200") || r2.getTripleNumber() == null)
+            if (!Objects.equals(r2.getStatus(), HttpStatus.OK) || r2.getTripleNumber() == null)
                 r2.setTripleNumber(-1L);
             if (r1.isValid() && !r2.isValid())
                 return (-1) * r1.getTripleNumber().intValue();

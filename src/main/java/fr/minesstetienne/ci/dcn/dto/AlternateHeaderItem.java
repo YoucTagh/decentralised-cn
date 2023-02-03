@@ -1,5 +1,7 @@
 package fr.minesstetienne.ci.dcn.dto;
 
+import org.springframework.http.MediaType;
+
 /**
  * @author YoucTagh
  */
@@ -7,7 +9,7 @@ package fr.minesstetienne.ci.dcn.dto;
 public class AlternateHeaderItem {
     private String iri;
     private float acceptabilityValue;
-    private String mediaType;
+    private MediaType mediaType;
 
     public AlternateHeaderItem setIri(String iri) {
         this.iri = iri;
@@ -19,7 +21,7 @@ public class AlternateHeaderItem {
         return this;
     }
 
-    public AlternateHeaderItem setMediaType(String mediaType) {
+    public AlternateHeaderItem setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
         return this;
     }

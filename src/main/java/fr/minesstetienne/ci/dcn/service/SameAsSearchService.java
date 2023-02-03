@@ -67,19 +67,19 @@ public class SameAsSearchService {
                 ResponseEntity<String> isRepresentationAvailable = mediaTypeDCNService.checkRepresentationIfAvailable(representationIRI, mediaTypeList);
                 RepresentationDetail representationDetail = new RepresentationDetail()
                         .setIri(representationIRI)
-                        .setStatus(String.valueOf(isRepresentationAvailable.getStatusCodeValue()))
-                        .setContentType(isRepresentationAvailable.getHeaders().getContentType().toString());
+                        .setStatus(isRepresentationAvailable.getStatusCode())
+                        .setContentType(isRepresentationAvailable.getHeaders().getContentType());
                 resourceDetail.getRepresentationDetails().add(representationDetail);
             } catch (HttpClientErrorException ex) {
                 resourceDetail.getRepresentationDetails().add(new RepresentationDetail()
                         .setIri(responseSameAsDTO.getUri())
-                        .setStatus(String.valueOf(ex.getStatusCode().value()))
-                        .setContentType(ex.getResponseHeaders().getContentType().toString()));
+                        .setStatus(ex.getStatusCode())
+                        .setContentType(ex.getResponseHeaders().getContentType()));
             } catch (Exception ex) {
                 resourceDetail.getRepresentationDetails().add(new RepresentationDetail()
                         .setIri(responseSameAsDTO.getUri())
-                        .setStatus(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()))
-                        .setContentType("-"));
+                        .setStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .setContentType(MediaType.ALL));
             }
         });
         return resourceDetail;

@@ -1,6 +1,6 @@
 package fr.minesstetienne.ci.dcn.controller;
 
-import fr.minesstetienne.ci.dcn.dto.AlternateHeaderItem;
+import fr.minesstetienne.ci.dcn.dto.AlternateHeaderItemProfile;
 import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
 import fr.minesstetienne.ci.dcn.dto.ResourceDetail;
 import fr.minesstetienne.ci.dcn.service.ProfileDCNService;
@@ -30,7 +30,6 @@ public class ProfileDCNController {
     private final ProfileDCNService profileDCNService;
     private final SameAsSearchService sameAsSearchService;
 
-
     public ProfileDCNController(ProfileDCNService profileDCNService, SameAsSearchService sameAsSearchService) {
         this.profileDCNService = profileDCNService;
         this.sameAsSearchService = sameAsSearchService;
@@ -50,44 +49,55 @@ public class ProfileDCNController {
             ResourceDetail resourceDetail = sameAsSearchService.findSameResources(iri, UtilService.getSemanticAcceptedMediaTypes());
             HttpHeaders headers = new HttpHeaders();
 
-            for (int i = 0; i < resourceDetail.getRepresentationDetails().size(); i++) {
+            //String bestRepresentationIRI;
+            RepresentationDetail bestRepresentation = new RepresentationDetail()
+                    .setValid(false)
+                    .setTripleNumber(0L);
 
-                RepresentationDetail representationDetail = resourceDetail.getRepresentationDetails().get(i);
+            ArrayList<AlternateHeaderItemProfile> alternateHeaderItems = new ArrayList<>();
 
-                if (representationDetail.getStatus().equals(HttpStatus.OK) && representationDetail.isValid()) {
-                    headers.setContentType(MediaType.valueOf("text/turtle"));
-                    headers.set(HttpHeaders.LOCATION, representationDetail.getIri());
-                    headers.set(HttpHeaders.LINK, "<" + profileURI + ">" + ";rel=\"profile\"");
-                    headers.setVary(List.of("Accept-Profile"));
-
-                    ResponseEntity<String> representation = profileDCNService.getRepresentationIfAvailable(representationDetail.getIri(), profileURI);
-
-                    ArrayList<AlternateHeaderItem> alternateHeaderItems = new ArrayList<>();
-
-                    for (int j = i; j < resourceDetail.getRepresentationDetails().size(); j++) {
-                        RepresentationDetail alternateRepresentation = resourceDetail.getRepresentationDetails().get(j);
-                        if (alternateRepresentation.getStatus().equals(HttpStatus.OK) && alternateRepresentation.isValid()) {
+            for (RepresentationDetail sameAsRepresentation : resourceDetail.getRepresentationDetails()) {
+                if (sameAsRepresentation.getStatus().equals(HttpStatus.OK)) {
+                    RepresentationDetail representationDetail = profileDCNService.checkConformanceOfRepresentation(sameAsRepresentation.getIri(), profileURI);
+                    if (representationDetail.isValid()) {
+                        if (UtilService.isBetterRepresentationThan(representationDetail, bestRepresentation)) {
+                            if (bestRepresentation.isValid())
+                                alternateHeaderItems.add(
+                                        (AlternateHeaderItemProfile) new AlternateHeaderItemProfile()
+                                                .setNumberOfTriples(bestRepresentation.getTripleNumber())
+                                                .setIri(bestRepresentation.getIri())
+                                                .setMediaType(bestRepresentation.getContentType()));
+                            bestRepresentation = representationDetail;
+                        } else {
                             alternateHeaderItems.add(
-                                    new AlternateHeaderItem()
-                                            .setIri(alternateRepresentation.getIri())
-                                            .setMediaType(alternateRepresentation.getContentType())
-                                            .setAcceptabilityValue(1F)
-                            );
+                                    (AlternateHeaderItemProfile) new AlternateHeaderItemProfile()
+                                            .setNumberOfTriples(representationDetail.getTripleNumber())
+                                            .setIri(representationDetail.getIri())
+                                            .setMediaType(representationDetail.getContentType()));
                         }
                     }
-                    // Format Alternate header
-                    StringBuilder alternateHeaderSB = new StringBuilder();
-                    for (AlternateHeaderItem alternateHeaderItem : alternateHeaderItems) {
-                        String toString = alternateHeaderItem.toString();
-                        alternateHeaderSB.append(toString).append(", ");
-                    }
-                    headers.set("Alternates", alternateHeaderSB.toString());
-
-                    return new ResponseEntity<>(representation.getBody(), headers, HttpStatus.OK);
                 }
             }
 
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            if (bestRepresentation.isValid()) {
+                // Format Alternate header
+                StringBuilder alternateHeaderSB = new StringBuilder();
+                for (AlternateHeaderItemProfile alternateHeaderItem : alternateHeaderItems) {
+                    alternateHeaderItem.setAcceptabilityValue((float) alternateHeaderItem.getNumberOfTriples() / bestRepresentation.getTripleNumber());
+                    String toString = alternateHeaderItem.toString();
+                    alternateHeaderSB.append(toString).append(", ");
+                }
+
+                headers.setContentType(MediaType.valueOf("text/turtle"));
+                headers.set(HttpHeaders.LOCATION, bestRepresentation.getIri());
+                headers.set(HttpHeaders.LINK, "<" + profileURI + ">" + ";rel=\"profile\"");
+                headers.setVary(List.of("Accept-Profile"));
+                headers.set("Alternates", alternateHeaderSB.toString());
+
+                return new ResponseEntity<>(bestRepresentation.getContent(), headers, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            }
         }
     }
 }

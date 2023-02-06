@@ -41,6 +41,10 @@ public class ProfileDCNService {
 
     }
 
+    public RepresentationDetail checkConformanceOfRepresentation(String iri,String profileIri) {
+        return validationService.checkConformance(iri, profileIri);
+    }
+
     public ResponseEntity<String> checkRepresentationIfAvailable(String iri) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(UtilService.getSemanticAcceptedMediaTypes());

@@ -1,5 +1,6 @@
 package fr.minesstetienne.ci.dcn.service;
 
+import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
@@ -18,15 +19,15 @@ public class UtilService {
         return false;
     }
 
-    public static List<MediaType> getSemanticAcceptedMediaTypes(){
+    public static List<MediaType> getSemanticAcceptedMediaTypes() {
         return Arrays.asList(
                 MediaType.parseMediaType("application/rdf+xml"),
                 MediaType.parseMediaType("text/turtle"),
                 MediaType.parseMediaType("application/n-triples"));
     }
 
-    public static boolean isBetterRepresentationThan(){
-        return true;
+    public static boolean isBetterRepresentationThan(RepresentationDetail representationDetail, RepresentationDetail bestRepresentation) {
+        return representationDetail.getTripleNumber() > bestRepresentation.getTripleNumber();
     }
 
     public static void main(String[] args) {

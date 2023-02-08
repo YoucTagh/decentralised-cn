@@ -30,10 +30,4 @@ public class UtilService {
         return representationDetail.getTripleNumber() > bestRepresentation.getTripleNumber();
     }
 
-    public static void main(String[] args) {
-        System.out.println(isMediaTypeContainsInList(
-                MediaType.parseMediaType("text/turtle"),
-                MediaType.parseMediaTypes("text/html")
-        ));
-    }
 }

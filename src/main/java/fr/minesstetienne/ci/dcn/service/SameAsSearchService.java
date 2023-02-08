@@ -12,6 +12,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author YoucTagh
@@ -42,7 +44,7 @@ public class SameAsSearchService {
                 .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        headers.setAccept(Stream.of(MediaType.APPLICATION_JSON).collect(Collectors.toList()));
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<ResponseSameAsDTO[]> respEntity = restTemplate.exchange(uri, HttpMethod.GET, entity, ResponseSameAsDTO[].class);

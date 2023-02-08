@@ -1,0 +1,47 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix ex:      <https://example.com/ontology#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/>.
+@prefix org:     <http://www.w3.org/ns/org#>.
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dbo:     <http://dbpedia.org/ontology/> .
+
+
+ex:enTagForLabels
+    a                   sh:NodeShape ;
+    sh:targetSubjectsOf rdfs:label ;
+    sh:property         [ sh:path       rdfs:label ;
+                          sh:qualifiedValueShape [
+                                            sh:languageIn ("en") ;
+                                        ] ;
+                          sh:qualifiedMinCount 1 ;
+
+                        ] ;
+.
+
+ex:arTagForLabels
+    a                   sh:NodeShape ;
+    sh:targetSubjectsOf rdfs:label ;
+    sh:property         [ sh:path       rdfs:label ;
+                          sh:qualifiedValueShape [
+                                            sh:languageIn ("ar") ;
+                                        ] ;
+                          sh:qualifiedMinCount 1 ;
+
+                        ] ;
+.
+
+
+ex:enTagForComments
+    a                   sh:NodeShape ;
+    sh:targetSubjectsOf rdfs:comment  ;
+    sh:property         [ sh:path       rdfs:comment  ;
+                          sh:qualifiedValueShape [
+                                            sh:languageIn ( "en" "fr" ) ;
+                                        ] ;
+                          sh:qualifiedMinCount 1 ;
+
+                        ] ;
+.

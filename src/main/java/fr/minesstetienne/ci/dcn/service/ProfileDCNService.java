@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author YoucTagh
@@ -36,7 +37,7 @@ public class ProfileDCNService {
         headers.setContentType(representationDetail.getContentType());
         headers.set(HttpHeaders.LOCATION, representationDetail.getIri());
         headers.set(HttpHeaders.LINK, "<" + profileIri + ">" + ";rel=\"profile\"");
-        headers.setVary(List.of("Accept-Profile"));
+        headers.setVary(Stream.of("Accept-Profile").collect(Collectors.toList()));
         return new ResponseEntity<>(representationDetail.getContent(), headers, representationDetail.getStatus());
 
     }

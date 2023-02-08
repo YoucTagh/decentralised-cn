@@ -59,9 +59,10 @@ public class ValidationService {
                     .setTripleNumber((long) dataGraph.size());
 
         } catch (HttpException ex) {
+            HttpStatus httpStatus = HttpStatus.resolve(ex.getStatusCode());
             return new RepresentationDetail()
                     .setIri(representationIRI)
-                    .setStatus(HttpStatus.resolve(ex.getStatusCode()))
+                    .setStatus((httpStatus != null) ? httpStatus : HttpStatus.INTERNAL_SERVER_ERROR)
                     .setTripleNumber(0L)
                     .setValid(false);
         } catch (Exception ex) {

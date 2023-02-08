@@ -3,7 +3,6 @@ package fr.minesstetienne.ci.dcn.controller;
 import fr.minesstetienne.ci.dcn.dto.AlternateHeaderItem;
 import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
 import fr.minesstetienne.ci.dcn.dto.ResourceDetail;
-import fr.minesstetienne.ci.dcn.formsubmission.SameAsResource;
 import fr.minesstetienne.ci.dcn.service.MediaTypeDCNService;
 import fr.minesstetienne.ci.dcn.service.SameAsSearchService;
 import fr.minesstetienne.ci.dcn.service.UtilService;
@@ -13,12 +12,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author YoucTagh
@@ -55,7 +57,7 @@ public class MediaTypeDCNController {
                         && UtilService.isMediaTypeContainsInList(representationDetail.getContentType(), acceptHeaderMT)) {
                     headers.setContentType(representationDetail.getContentType());
                     headers.set(HttpHeaders.LOCATION, representationDetail.getIri());
-                    headers.setVary(List.of(HttpHeaders.ACCEPT));
+                    headers.setVary(Stream.of(HttpHeaders.ACCEPT).collect(Collectors.toList()));
 
                     ResponseEntity<String> representation = mediaTypeDCNService.getRepresentationIfAvailable(representationDetail.getIri(), acceptHeaderMT);
 

@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author YoucTagh
@@ -91,7 +92,7 @@ public class ProfileDCNController {
                 headers.setContentType(MediaType.valueOf("text/turtle"));
                 headers.set(HttpHeaders.LOCATION, bestRepresentation.getIri());
                 headers.set(HttpHeaders.LINK, "<" + profileURI + ">" + ";rel=\"profile\"");
-                headers.setVary(List.of("Accept-Profile"));
+                headers.setVary(Stream.of("Accept-Profile").collect(Collectors.toList()));
                 headers.set("Alternates", alternateHeaderSB.toString());
 
                 return new ResponseEntity<>(bestRepresentation.getContent(), headers, HttpStatus.OK);

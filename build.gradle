@@ -19,6 +19,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	implementation 'org.apache.jena:jena-shacl:4.4.0'
+
+//	Swagger
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
 }
 
 tasks.named('test') {

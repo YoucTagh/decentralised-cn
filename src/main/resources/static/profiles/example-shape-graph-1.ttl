@@ -14,25 +14,12 @@ ex:enTagForLabels
     sh:targetSubjectsOf rdfs:label ;
     sh:property         [ sh:path       rdfs:label ;
                           sh:qualifiedValueShape [
-                                            sh:languageIn ("en") ;
+                                            sh:languageIn ("en" "fr") ;
                                         ] ;
                           sh:qualifiedMinCount 1 ;
 
                         ] ;
 .
-
-ex:arTagForLabels
-    a                   sh:NodeShape ;
-    sh:targetSubjectsOf rdfs:label ;
-    sh:property         [ sh:path       rdfs:label ;
-                          sh:qualifiedValueShape [
-                                            sh:languageIn ("ar") ;
-                                        ] ;
-                          sh:qualifiedMinCount 1 ;
-
-                        ] ;
-.
-
 
 ex:enTagForComments
     a                   sh:NodeShape ;

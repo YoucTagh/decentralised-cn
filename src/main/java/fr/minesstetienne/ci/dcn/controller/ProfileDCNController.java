@@ -12,10 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -36,8 +33,8 @@ public class ProfileDCNController {
         this.sameAsSearchService = sameAsSearchService;
     }
 
-    @GetMapping("/api")
-    public ResponseEntity getBestRepresentationWithProfile(@RequestParam String iri, @Nullable @RequestHeader("Accept-Profile") String profileURI) {
+    @RequestMapping(method = RequestMethod.GET, path = "/api", produces = {"text/turtle"})
+    public ResponseEntity getBestRepresentationWithProfile(@RequestParam String iri, @Nullable @RequestHeader("accept-Profile") String profileURI) {
 
         if (profileURI == null) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);

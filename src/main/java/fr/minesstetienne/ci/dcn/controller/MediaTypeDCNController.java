@@ -12,10 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +34,16 @@ public class MediaTypeDCNController {
         this.mediaTypeDCNService = mediaTypeDCNService;
     }
 
-    @GetMapping("/api")
-    public ResponseEntity getBestRepresentation(@RequestParam String iri, @Nullable @RequestHeader(HttpHeaders.ACCEPT) String acceptHeader) {
-
-        List<MediaType> acceptHeaderMT = MediaType.parseMediaTypes((acceptHeader != null) ? acceptHeader : "*/*");
+    @RequestMapping(method = RequestMethod.GET, path = "/api")
+    public ResponseEntity getBestRepresentation(@RequestParam String iri, @Nullable @RequestHeader(name = "accept") String accept) {
+        System.out.println("accept header: " + accept);
+        List<MediaType> acceptHeaderMT = MediaType.parseMediaTypes((accept != null) ? accept : "*/*");
         ResponseEntity<String> representationIfAvailable = mediaTypeDCNService.getRepresentationIfAvailable(iri, acceptHeaderMT);
         if (representationIfAvailable.getStatusCode().equals(HttpStatus.OK)
                 && UtilService.isMediaTypeContainsInList(representationIfAvailable.getHeaders().getContentType(), acceptHeaderMT)) {
             return representationIfAvailable;
         } else {
-            ResourceDetail resourceDetail = sameAsSearchService.findSameResources(iri, MediaType.parseMediaTypes(acceptHeader));
+            ResourceDetail resourceDetail = sameAsSearchService.findSameResources(iri, MediaType.parseMediaTypes(accept));
             HttpHeaders headers = new HttpHeaders();
 
             for (int i = 0; i < resourceDetail.getRepresentationDetails().size(); i++) {

@@ -6,10 +6,7 @@ import fr.minesstetienne.ci.dcn.dto.ResourceDetail;
 import fr.minesstetienne.ci.dcn.service.MediaTypeDCNService;
 import fr.minesstetienne.ci.dcn.service.SameAsSearchService;
 import fr.minesstetienne.ci.dcn.service.UtilService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +20,7 @@ import java.util.stream.Stream;
  * @author YoucTagh
  */
 @Controller
-@RequestMapping("/dcn/media-type")
+@RequestMapping("/dcn/api")
 public class MediaTypeDCNController {
 
     private final SameAsSearchService sameAsSearchService;
@@ -34,10 +31,15 @@ public class MediaTypeDCNController {
         this.mediaTypeDCNService = mediaTypeDCNService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/api")
+    @RequestMapping(method = RequestMethod.GET, path = "/media-type")
     public ResponseEntity getBestRepresentation(@RequestParam String iri, @Nullable @RequestHeader(name = "accept") String accept) {
         System.out.println("accept header: " + accept);
-        List<MediaType> acceptHeaderMT = MediaType.parseMediaTypes((accept != null) ? accept : "*/*");
+        List<MediaType> acceptHeaderMT;
+        try {
+            acceptHeaderMT = MediaType.parseMediaTypes((accept != null) ? accept : "*/*");
+        } catch (InvalidMediaTypeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+        }
         ResponseEntity<String> representationIfAvailable = mediaTypeDCNService.getRepresentationIfAvailable(iri, acceptHeaderMT);
         if (representationIfAvailable.getStatusCode().equals(HttpStatus.OK)
                 && UtilService.isMediaTypeContainsInList(representationIfAvailable.getHeaders().getContentType(), acceptHeaderMT)) {

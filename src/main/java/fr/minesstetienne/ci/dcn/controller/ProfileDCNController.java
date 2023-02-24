@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  * @author YoucTagh
  */
 @Controller
-@RequestMapping("/dcn/profile")
+@RequestMapping("/dcn/api")
 public class ProfileDCNController {
 
     private final ProfileDCNService profileDCNService;
@@ -33,8 +33,8 @@ public class ProfileDCNController {
         this.sameAsSearchService = sameAsSearchService;
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/api", produces = {"text/turtle"})
-    public ResponseEntity getBestRepresentationWithProfile(@RequestParam String iri, @Nullable @RequestHeader("accept-Profile") String profileURI) {
+    @RequestMapping(method = RequestMethod.GET, path = "/profile", produces = {"text/turtle"})
+    public ResponseEntity getBestRepresentationWithProfile(@RequestParam String iri, @Nullable @RequestHeader("accept-profile") String profileURI) {
 
         if (profileURI == null) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
@@ -43,59 +43,60 @@ public class ProfileDCNController {
         ResponseEntity<String> representationIfAvailable = profileDCNService.getRepresentationIfAvailable(iri, profileURI);
         if (representationIfAvailable.getStatusCode().equals(HttpStatus.OK)) {
             return representationIfAvailable;
-        } else {
-            ResourceDetail resourceDetail = sameAsSearchService.findSameResources(iri, UtilService.getSemanticAcceptedMediaTypes());
-            HttpHeaders headers = new HttpHeaders();
+        }
 
-            //String bestRepresentationIRI;
-            RepresentationDetail bestRepresentation = new RepresentationDetail()
-                    .setValid(false)
-                    .setTripleNumber(0L);
+        ResourceDetail resourceDetail = sameAsSearchService.findSameResources(iri, UtilService.getSemanticAcceptedMediaTypes());
+        HttpHeaders headers = new HttpHeaders();
 
-            ArrayList<AlternateHeaderItemProfile> alternateHeaderItems = new ArrayList<>();
+        //String bestRepresentationIRI;
+        RepresentationDetail bestRepresentation = new RepresentationDetail()
+                .setValid(false)
+                .setTripleNumber(0L);
 
-            for (RepresentationDetail sameAsRepresentation : resourceDetail.getRepresentationDetails()) {
-                if (sameAsRepresentation.getStatus().equals(HttpStatus.OK)) {
-                    RepresentationDetail representationDetail = profileDCNService.checkConformanceOfRepresentation(sameAsRepresentation.getIri(), profileURI);
-                    if (representationDetail.isValid()) {
-                        if (UtilService.isBetterRepresentationThan(representationDetail, bestRepresentation)) {
-                            if (bestRepresentation.isValid())
-                                alternateHeaderItems.add(
-                                        (AlternateHeaderItemProfile) new AlternateHeaderItemProfile()
-                                                .setNumberOfTriples(bestRepresentation.getTripleNumber())
-                                                .setIri(bestRepresentation.getIri())
-                                                .setMediaType(bestRepresentation.getContentType()));
-                            bestRepresentation = representationDetail;
-                        } else {
+        ArrayList<AlternateHeaderItemProfile> alternateHeaderItems = new ArrayList<>();
+
+        for (RepresentationDetail sameAsRepresentation : resourceDetail.getRepresentationDetails()) {
+            if (sameAsRepresentation.getStatus().equals(HttpStatus.OK)) {
+                RepresentationDetail representationDetail = profileDCNService.checkConformanceOfRepresentation(sameAsRepresentation.getIri(), profileURI);
+                if (representationDetail.isValid()) {
+                    if (UtilService.isBetterRepresentationThan(representationDetail, bestRepresentation)) {
+                        if (bestRepresentation.isValid())
                             alternateHeaderItems.add(
                                     (AlternateHeaderItemProfile) new AlternateHeaderItemProfile()
-                                            .setNumberOfTriples(representationDetail.getTripleNumber())
-                                            .setIri(representationDetail.getIri())
-                                            .setMediaType(representationDetail.getContentType()));
-                        }
+                                            .setNumberOfTriples(bestRepresentation.getTripleNumber())
+                                            .setIri(bestRepresentation.getIri())
+                                            .setMediaType(bestRepresentation.getContentType()));
+                        bestRepresentation = representationDetail;
+                    } else {
+                        alternateHeaderItems.add(
+                                (AlternateHeaderItemProfile) new AlternateHeaderItemProfile()
+                                        .setNumberOfTriples(representationDetail.getTripleNumber())
+                                        .setIri(representationDetail.getIri())
+                                        .setMediaType(representationDetail.getContentType()));
                     }
                 }
             }
-
-            if (bestRepresentation.isValid()) {
-                // Format Alternate header
-                StringBuilder alternateHeaderSB = new StringBuilder();
-                for (AlternateHeaderItemProfile alternateHeaderItem : alternateHeaderItems) {
-                    alternateHeaderItem.setAcceptabilityValue((float) alternateHeaderItem.getNumberOfTriples() / bestRepresentation.getTripleNumber());
-                    String toString = alternateHeaderItem.toString();
-                    alternateHeaderSB.append(toString).append(", ");
-                }
-
-                headers.setContentType(MediaType.valueOf("text/turtle"));
-                headers.set(HttpHeaders.LOCATION, bestRepresentation.getIri());
-                headers.set(HttpHeaders.LINK, "<" + profileURI + ">" + ";rel=\"profile\"");
-                headers.setVary(Stream.of("Accept-Profile").collect(Collectors.toList()));
-                headers.set("Alternates", alternateHeaderSB.toString());
-
-                return new ResponseEntity<>(bestRepresentation.getContent(), headers, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-            }
         }
+
+        if (bestRepresentation.isValid()) {
+            // Format Alternate header
+            StringBuilder alternateHeaderSB = new StringBuilder();
+            for (AlternateHeaderItemProfile alternateHeaderItem : alternateHeaderItems) {
+                alternateHeaderItem.setAcceptabilityValue((float) alternateHeaderItem.getNumberOfTriples() / bestRepresentation.getTripleNumber());
+                String toString = alternateHeaderItem.toString();
+                alternateHeaderSB.append(toString).append(", ");
+            }
+
+            headers.setContentType(MediaType.valueOf("text/turtle"));
+            headers.set(HttpHeaders.LOCATION, bestRepresentation.getIri());
+            headers.set(HttpHeaders.LINK, "<" + profileURI + ">" + ";rel=\"profile\"");
+            headers.setVary(Stream.of("accept-profile").collect(Collectors.toList()));
+            headers.set("Alternates", alternateHeaderSB.toString());
+
+            return new ResponseEntity<>(bestRepresentation.getContent(), headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
     }
 }

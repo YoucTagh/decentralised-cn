@@ -1,4 +1,4 @@
-package fr.minesstetienne.ci.dcn.dto;
+package com.dcn.dto;
 
 import lombok.experimental.Accessors;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 @Accessors(chain = true)
 public class ResourceDetail {

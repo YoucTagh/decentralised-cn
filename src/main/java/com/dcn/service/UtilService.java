@@ -1,13 +1,13 @@
-package fr.minesstetienne.ci.dcn.service;
+package com.dcn.service;
 
-import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
+import com.dcn.dto.RepresentationDetail;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 public class UtilService {
 

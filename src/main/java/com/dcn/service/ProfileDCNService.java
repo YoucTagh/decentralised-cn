@@ -1,6 +1,6 @@
-package fr.minesstetienne.ci.dcn.service;
+package com.dcn.service;
 
-import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
+import com.dcn.dto.RepresentationDetail;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 @Service
 public class ProfileDCNService {

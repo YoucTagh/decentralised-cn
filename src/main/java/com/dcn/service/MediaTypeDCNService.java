@@ -1,4 +1,4 @@
-package fr.minesstetienne.ci.dcn.service;
+package com.dcn.service;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
@@ -9,7 +9,7 @@ import java.time.Duration;
 import java.util.List;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 @Service
 public class MediaTypeDCNService {

@@ -7,6 +7,7 @@ plugins {
 group = 'fr.mines-stetienne.ci'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '9'
+targetCompatibility = '9'
 
 repositories {
 	mavenCentral()

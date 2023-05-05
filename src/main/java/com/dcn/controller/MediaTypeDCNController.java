@@ -1,11 +1,11 @@
-package fr.minesstetienne.ci.dcn.controller;
+package com.dcn.controller;
 
-import fr.minesstetienne.ci.dcn.dto.AlternateHeaderItem;
-import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
-import fr.minesstetienne.ci.dcn.dto.ResourceDetail;
-import fr.minesstetienne.ci.dcn.service.MediaTypeDCNService;
-import fr.minesstetienne.ci.dcn.service.SameAsSearchService;
-import fr.minesstetienne.ci.dcn.service.UtilService;
+import com.dcn.service.MediaTypeDCNService;
+import com.dcn.service.UtilService;
+import com.dcn.dto.AlternateHeaderItem;
+import com.dcn.dto.RepresentationDetail;
+import com.dcn.dto.ResourceDetail;
+import com.dcn.service.SameAsSearchService;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 @Controller
 @RequestMapping("/dcn/api")

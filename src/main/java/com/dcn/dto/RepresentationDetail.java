@@ -1,10 +1,10 @@
-package fr.minesstetienne.ci.dcn.dto;
+package com.dcn.dto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 public class RepresentationDetail {
     private String iri;

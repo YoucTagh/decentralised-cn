@@ -1,8 +1,8 @@
-package fr.minesstetienne.ci.dcn.service;
+package com.dcn.service;
 
-import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
-import fr.minesstetienne.ci.dcn.dto.ResourceDetail;
-import fr.minesstetienne.ci.dcn.dto.ResponseSameAsDTO;
+import com.dcn.dto.RepresentationDetail;
+import com.dcn.dto.ResourceDetail;
+import com.dcn.dto.ResponseSameAsDTO;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 @Service
 public class SameAsSearchService {

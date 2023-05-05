@@ -1,7 +1,6 @@
-package fr.minesstetienne.ci.dcn.service;
+package com.dcn.service;
 
-import fr.minesstetienne.ci.dcn.dto.RepresentationDetail;
-import fr.minesstetienne.ci.dcn.dto.ResourceDetail;
+import com.dcn.dto.RepresentationDetail;
 import org.apache.jena.atlas.web.HttpException;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.riot.Lang;
@@ -14,10 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
-import java.util.*;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 @Service
 public class ValidationService {

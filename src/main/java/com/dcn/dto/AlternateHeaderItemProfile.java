@@ -1,7 +1,7 @@
-package fr.minesstetienne.ci.dcn.dto;
+package com.dcn.dto;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 public class AlternateHeaderItemProfile extends AlternateHeaderItem{
     private Long numberOfTriples;

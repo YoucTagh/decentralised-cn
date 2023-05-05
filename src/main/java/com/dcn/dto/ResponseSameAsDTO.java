@@ -1,9 +1,9 @@
-package fr.minesstetienne.ci.dcn.dto;
+package com.dcn.dto;
 
 import java.util.List;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 public class ResponseSameAsDTO {
 

@@ -1,4 +1,4 @@
-package fr.minesstetienne.ci.dcn.configuration;
+package com.dcn.configuration;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,7 +15,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * @author YoucTagh
+ * @author _
  */
 @Configuration
 @EnableSwagger2

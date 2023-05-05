@@ -1,6 +1,8 @@
 package com.dcn.service;
 
 import com.dcn.dto.RepresentationDetail;
+import org.apache.jena.shacl.validation.ReportEntry;
+import org.apache.jena.shacl.validation.Severity;
 import org.springframework.http.MediaType;
 
 import java.util.Arrays;
@@ -27,6 +29,35 @@ public class UtilService {
     }
 
     public static boolean isBetterRepresentationThan(RepresentationDetail representationDetail, RepresentationDetail bestRepresentation) {
+
+        int newRepresentationWarningCount = 0;
+        int newRepresentationInfoCount = 0;
+        int bestRepresentationWarningCount = 0;
+        int bestRepresentationInfoCount = 0;
+
+        for (ReportEntry reportEntry : representationDetail.getValidationReport().getEntries()) {
+            if (reportEntry.severity().equals(Severity.Warning)) {
+                newRepresentationWarningCount++;
+            } else if (reportEntry.severity().equals(Severity.Info)) {
+                newRepresentationInfoCount++;
+            }
+        }
+        for (ReportEntry reportEntry : bestRepresentation.getValidationReport().getEntries()) {
+            if (reportEntry.severity().equals(Severity.Warning)) {
+                bestRepresentationWarningCount++;
+            } else if (reportEntry.severity().equals(Severity.Info)) {
+                bestRepresentationInfoCount++;
+            }
+        }
+
+        if (newRepresentationWarningCount != bestRepresentationWarningCount) {
+            return newRepresentationWarningCount < bestRepresentationWarningCount;
+        }
+
+        if (newRepresentationInfoCount != bestRepresentationInfoCount) {
+            return newRepresentationInfoCount < bestRepresentationInfoCount;
+        }
+
         return representationDetail.getTripleNumber() > bestRepresentation.getTripleNumber();
     }
 

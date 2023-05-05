@@ -1,5 +1,6 @@
 package com.dcn.dto;
 
+import org.apache.jena.shacl.ValidationReport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -16,6 +17,8 @@ public class RepresentationDetail {
     private Long tripleNumber;
 
     private boolean isValid;
+
+    private ValidationReport validationReport;
 
     public String getIri() {
         return iri;
@@ -68,6 +71,15 @@ public class RepresentationDetail {
 
     public RepresentationDetail setValid(boolean valid) {
         isValid = valid;
+        return this;
+    }
+
+    public ValidationReport getValidationReport() {
+        return validationReport;
+    }
+
+    public RepresentationDetail setValidationReport(ValidationReport validationReport) {
+        this.validationReport = validationReport;
         return this;
     }
 }
